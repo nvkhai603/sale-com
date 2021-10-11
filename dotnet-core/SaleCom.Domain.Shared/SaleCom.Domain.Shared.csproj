@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.3.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nvk.Cache\Nvk.Cache.csproj" />
+    <ProjectReference Include="..\Nvk.Dapper\Nvk.Dapper.csproj" />
+    <ProjectReference Include="..\Nvk.Mailkit\Nvk.Mailkit.csproj" />
+    <ProjectReference Include="..\Nvk.Uow\Nvk.Uow.csproj" />
+    <ProjectReference Include="..\Nvk.Utilities\Nvk.Utilities.csproj" />
+  </ItemGroup>
+
+</Project>

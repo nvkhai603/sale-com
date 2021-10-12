@@ -9,13 +9,20 @@ using Nvk.MailKit;
 
 namespace SaleCom.Application.Accounts
 {
+    /// <summary>
+    /// Class implementation mặc định của <see cref="IAccountService"/> interface.<br/>
+    /// Dịch vụ về tài khoản, người dùng, đăng nhập, etc.
+    /// </summary>
     public class AccountService : IAccountService
     {
         private UserManager<AppUser> _userManager;
         private SignInManager<AppUser> _signInManager;
         private IEmailService _emailService;
         private HttpContext _httpContext;
-        public AccountService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IEmailService emailService, IHttpContextAccessor httpContextAccessor)
+        public AccountService(UserManager<AppUser> userManager, 
+            SignInManager<AppUser> signInManager, 
+            IEmailService emailService, 
+            IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -24,11 +31,11 @@ namespace SaleCom.Application.Accounts
         }
 
         /// <summary>
-        /// Kích hoạt tài khoản qua email
+        /// Kích hoạt tài khoản qua email.
         /// </summary>
         /// <param name="email">Email</param>
-        /// <param name="token">Token</param>
-        /// <returns>IdentityResult</returns>
+        /// <param name="token">Token kích hoạt được gửi về mail.</param>
+        /// <returns>Kết quả kích hoạt tài khoản.</returns>
         public async Task<IdentityResult> ActiveAccountByEmailTokenAsync(string email,string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -40,6 +47,10 @@ namespace SaleCom.Application.Accounts
             return await _userManager.ConfirmEmailAsync(user, token);
         }
 
+        /// <summary>
+        /// Lấy về thông tin cần thiết của phiên hoạt động.
+        /// </summary>
+        /// <returns>Thông tin người dùng, công ty</returns>
         public async Task<SessionData> GetSessionDataAsync()
         {
             var email = _httpContext.User?.Identity.Name;
@@ -47,16 +58,19 @@ namespace SaleCom.Application.Accounts
             return new SessionData { Email = email, Phone = user.PhoneNumber };
         }
 
+        /// <summary>
+        /// Thực hiện đăng xuất tài khoản người dùng khỏi hệ thống.
+        /// </summary>
         public async Task LogOutAsync()
         {
             await _signInManager.SignOutAsync();
         }
 
         /// <summary>
-        /// Tạo mới tài khoản truy cập
+        /// Tạo mới tài khoản truy cập.
         /// </summary>
-        /// <param name="registerAccount">RegisterAccount</param>
-        /// <returns>IdentityResult</returns>
+        /// <param name="registerAccount">Thông tin đăng ký tài khoản người dùng.</param>
+        /// <returns>Kết quả đăng ký tài khoản.</returns>
         public async Task<IdentityResult> RegisterAccountAsync(RegisterAccount registerAccount)
         {
             if (!RegexHelper.IsValidEmail(registerAccount.Email))
@@ -79,6 +93,10 @@ namespace SaleCom.Application.Accounts
             return result;
         }
 
+        /// <summary>
+        /// Thực hiện yêu cầu đặt lại mật khẩu của người dùng.
+        /// </summary>
+        /// <param name="email">Email người dùng</param>
         public async Task ResetPasswordAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -91,6 +109,11 @@ namespace SaleCom.Application.Accounts
             _ = _emailService.SendAsync("SALECOM", user.Email, "Đặt lại mật khẩu SALECOM.", $"PASSWORD TOKEN: {Uri.EscapeDataString(resetPasswordToken)}");
         }
 
+        /// <summary>
+        /// Đăng nhập bằng tài khoản & mật khẩu.
+        /// </summary>
+        /// <param name="input">Thông tin tài khoản & mật khẩu.</param>
+        /// <returns>Kết quả đăng nhập.</returns>
         public async Task<SignInResult> SignInAsync(Login login)
         {
             var user = await _userManager.FindByEmailAsync(login.Email);

@@ -2,6 +2,7 @@
 using Nvk.EntityFrameworkCore.UnitOfWork;
 using SaleCom.Domain.Shared.Orders;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SaleCom.Api.Host.Controllers
 {
@@ -20,6 +21,26 @@ namespace SaleCom.Api.Host.Controllers
         {
             var orderRepo = _uow.GetRepository<Order>();
             return orderRepo.GetAll();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Insert(Order order) { 
+            var orderRepo = _uow.GetRepository<Order>();
+            await orderRepo.InsertAsync(order);
+            await _uow.SaveChangesAsync();
+            return Ok(order);
+        }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> Update(Order order)
+        {
+            var orderRepo = _uow.GetRepository<Order>();
+            var oldOrder = await orderRepo.FindAsync(order.Id);
+            oldOrder.Code = order.Code;
+            oldOrder.ConcurrencyStamp = order.ConcurrencyStamp;
+            orderRepo.Update(oldOrder);
+            await _uow.SaveChangesAsync();
+            return Ok(order);
         }
     }
 }

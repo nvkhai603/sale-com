@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Nvk.Ddd.Domain;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SaleCom.Domain.Shared.Orders
 {
-    public class Order
+    public class Order: AggregateRoot<Guid>
     {
-        public Guid Id { get; set; }
         public string Code { get; set; }
     }
 }

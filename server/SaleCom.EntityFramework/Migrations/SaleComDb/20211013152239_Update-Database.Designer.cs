@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SaleCom.EntityFramework;
 
 namespace SaleCom.EntityFramework.Migrations.SaleComDb
 {
     [DbContext(typeof(SaleComDbContext))]
-    partial class SaleComDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211013152239_Update-Database")]
+    partial class UpdateDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,36 +22,15 @@ namespace SaleCom.EntityFramework.Migrations.SaleComDb
             modelBuilder.Entity("SaleCom.Domain.Shared.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Code")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasMaxLength(40)
-                        .HasColumnType("varchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime?>("CreationTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("LastModifierId");
-
                     b.HasKey("Id");
 
-                    b.ToTable("orders");
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("SaleCom.Domain.Shared.Products.Product", b =>
@@ -108,7 +89,7 @@ namespace SaleCom.EntityFramework.Migrations.SaleComDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("products");
+                    b.ToTable("orders");
                 });
 
             modelBuilder.Entity("SaleCom.Domain.Shared.Varations.Varation", b =>
@@ -175,18 +156,16 @@ namespace SaleCom.EntityFramework.Migrations.SaleComDb
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("varations");
+                    b.ToTable("Varation");
                 });
 
             modelBuilder.Entity("SaleCom.Domain.Shared.Varations.Varation", b =>
                 {
-                    b.HasOne("SaleCom.Domain.Shared.Products.Product", "Product")
+                    b.HasOne("SaleCom.Domain.Shared.Products.Product", null)
                         .WithMany("Varations")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("SaleCom.Domain.Shared.Products.Product", b =>

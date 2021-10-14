@@ -1,22 +1,20 @@
-﻿using System;
+﻿using Nvk.Ddd.Domain;
+using SaleCom.Domain.Shared.Products;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SaleCom.Application.Contracts.Varations
+namespace SaleCom.Domain.Shared.Varations
 {
     /// <summary>
     /// Mẫu mã.
     /// </summary>
-    public class Varation
+    public class Varation: AggregateRoot<Guid>
     {
-        /// <summary>
-        /// Id.
-        /// </summary>
-        public Guid Id { get; set; }
         /// <summary>
         /// Hình ảnh.
         /// </summary>
-        public string[] Images { get; set; }
+        public string Images { get; set; }
         /// <summary>
         /// Khóa.
         /// </summary>
@@ -28,19 +26,19 @@ namespace SaleCom.Application.Contracts.Varations
         /// <summary>
         /// Giá nhập trung bình.
         /// </summary>
-        public int AverageImportPrice { get; set; }
+        public decimal AverageImportPrice { get; set; }
         /// <summary>
         /// Giá nhập cuối.
         /// </summary>
-        public int LastImportPrice { get; set; }
+        public decimal LastImportPrice { get; set; }
         /// <summary>
         /// Giá bán.
         /// </summary>
-        public int RetailPrice { get; set; }
+        public decimal RetailPrice { get; set; }
         /// <summary>
         /// Trọng lượng.
         /// </summary>
-        public int Weight { get; set; }
+        public decimal Weight { get; set; }
         /// <summary>
         /// Tổng nhập.
         /// </summary>
@@ -52,10 +50,14 @@ namespace SaleCom.Application.Contracts.Varations
         /// <summary>
         /// Tổng tiền chi nhập hàng.
         /// </summary>
-        public int TotalPurchasePrice { get; set; }
+        public decimal TotalPurchasePrice { get; set; }
         /// <summary>
         /// Id sản phẩm gốc.
         /// </summary>
         public Guid ProductId { get; set; }
+        /// <summary>
+        /// Sản phẩm gốc.
+        /// </summary>
+        public virtual Product Product { get; set; }
     }
 }

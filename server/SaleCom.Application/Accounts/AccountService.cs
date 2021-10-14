@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using SaleCom.Application.Contracts.Accounts;
-using SaleCom.Application.Utilities;
 using SaleCom.Domain.Shared.Identity;
 using System;
 using System.Threading.Tasks;
 using Nvk.MailKit;
+using Nvk.Utilities;
 
 namespace SaleCom.Application.Accounts
 {

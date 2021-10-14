@@ -1,12 +1,18 @@
-﻿using System;
+﻿using Nvk.Ddd.Domain;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SaleCom.Domain.Shared.Tenants
 {
-    public class Tenant
+    /// <summary>
+    /// Định nghĩa lớp công ty.
+    /// </summary>
+    public class Tenant: Entity<Guid>
     {
-        public Guid Id { get; set; }
+        /// <summary>
+        /// Tên công ty
+        /// </summary>
         public string Name { get; set; }
     }
 }

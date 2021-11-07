@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Nvk.EntityFrameworkCore.UnitOfWork;
-using SaleCom.Domain.Shared.Orders;
+using SaleCom.Domain.Orders;
+using SaleCom.EntityFramework;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,8 +11,8 @@ namespace SaleCom.Api.Host.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private readonly IUnitOfWork _uow;   
-        public OrdersController(IUnitOfWork uow)
+        private readonly IUnitOfWork<SaleComDbContext> _uow;   
+        public OrdersController(IUnitOfWork<SaleComDbContext> uow)
         {
             _uow = uow;
         }

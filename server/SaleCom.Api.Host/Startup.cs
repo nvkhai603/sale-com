@@ -8,11 +8,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SaleCom.Application;
-using SaleCom.Domain.Shared.Identity;
 using SaleCom.EntityFramework;
 using System.Threading.Tasks;
 using Nvk.EntityFrameworkCore.UnitOfWork;
 using Nvk.MailKit;
+using SaleCom.Domain.Identity;
+using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Nvk.Data;
+using Nvk.Dapper;
+using SaleCom.EntityFramework.Dapper;
 
 namespace SaleCom.Api.Host
 {
@@ -34,7 +39,8 @@ namespace SaleCom.Api.Host
         {
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
-                serviceScope.ServiceProvider.GetRequiredService<IdDbContext>().Database.Migrate();
+                var idDbContext = serviceScope.ServiceProvider.GetRequiredService<IdDbContext>();
+                idDbContext.Database.Migrate();
                 serviceScope.ServiceProvider.GetRequiredService<SaleComDbContext>().Database.Migrate();
             }
         }
@@ -42,17 +48,18 @@ namespace SaleCom.Api.Host
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDistributedMemoryCache();
             // Register config
             services.Configure<EmailOption>(Configuration.GetSection("Email"));
+            services.Configure<ConnectionStringOption>(Configuration.GetSection("ConnectionStrings"));
             // End register config
-
+            services.AddAutoMapper(typeof(ApplicationAutoMapperProfile));
             const string DB_VERSION = "5.5.5-10.2.38-MariaDB";
             services.AddDbContext<IdDbContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("IdDb"), ServerVersion.Parse(DB_VERSION)));
             services.AddDbContext<SaleComDbContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("Db"), ServerVersion.Parse(DB_VERSION)));
-            services.AddUnitOfWork<SaleComDbContext>();
-
+            services.AddUnitOfWork<SaleComDbContext, IdDbContext>();
             services.AddIdentity<AppUser, AppRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
@@ -66,10 +73,16 @@ namespace SaleCom.Api.Host
             })
                 .AddEntityFrameworkStores<IdDbContext>()
                 .AddDefaultTokenProviders();
-
+            //Use DI services to configure options
+            services.AddScoped<ITicketStore, AuthenticationTicketStore>();
+            services.AddOptions<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme)
+                .Configure<ITicketStore>((options, store) => {
+                    options.SessionStore = store;
+                });
             services.ConfigureApplicationCookie(options =>
             {
                 // Cookie settings
+                options.Cookie.Name = "_sid";
                 options.Cookie.HttpOnly = true;
                 options.Events.OnRedirectToAccessDenied = context =>
                 {
@@ -81,6 +94,7 @@ namespace SaleCom.Api.Host
                     context.Response.StatusCode = 401;
                     return Task.CompletedTask;
                 };
+                options.ExpireTimeSpan = TimeSpan.FromDays(14);
             });
 
             services.AddHttpContextAccessor();
@@ -89,6 +103,7 @@ namespace SaleCom.Api.Host
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SaleCom", Version = "v1" });
             });
+            services.AddTransient<ILazyServiceProvider, LazyServiceProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,14 +116,10 @@ namespace SaleCom.Api.Host
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SaleCom v1"));
             }
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

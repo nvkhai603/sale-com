@@ -18,5 +18,6 @@ namespace SaleCom.Application.Contracts.Accounts
         /// Số điện thoại người dùng.
         /// </summary>
         public string Phone { get; set; }
+        public string TenantId { get; set; }
     }
 }

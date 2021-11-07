@@ -9,6 +9,6 @@ namespace Nvk.MultiTenancy
         /// <summary>
         /// Id of the related tenant.
         /// </summary>
-        Guid? TenantId { get; }
+        Guid? TenantId { get; set; }
     }
 }

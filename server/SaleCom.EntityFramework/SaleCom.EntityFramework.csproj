@@ -5,11 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="5.0.11" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SaleCom.Domain.Shared\SaleCom.Domain.Shared.csproj" />
+    <ProjectReference Include="..\SaleCom.Domain\SaleCom.Domain.csproj" />
   </ItemGroup>
 
 </Project>

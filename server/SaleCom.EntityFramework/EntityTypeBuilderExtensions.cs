@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Nvk.Data;
 using Nvk.Ddd.Domain;
 using Nvk.MultiTenancy;
 using Nvk.Utilities;
@@ -17,15 +18,14 @@ namespace SaleCom.EntityFramework
             b.TryConfigureConcurrencyStamp();
             b.TryConfigureSoftDelete();
             b.TryConfigureMultiTenant();
+            b.TryConfigureMustHaveCurrentUser();
             b.TryConfigureCreateAndModified();
         }
-
         public static void ConfigureCreateAndModified<T>(this EntityTypeBuilder<T> b) 
             where T : class, IEntity
         {
             b.As<EntityTypeBuilder>();
         }
-
         public static void TryConfigureCreateAndModified(this EntityTypeBuilder b)
         {
             if (b.Metadata.ClrType.IsAssignableTo<IEntity>())
@@ -40,7 +40,6 @@ namespace SaleCom.EntityFramework
                     .HasColumnName(nameof(IEntity.LastModifierId));
             }
         }
-
         public static void ConfigureConcurrencyStamp<T>(this EntityTypeBuilder<T> b)
             where T : class, IHasConcurrencyStamp
         {
@@ -56,21 +55,19 @@ namespace SaleCom.EntityFramework
                     .HasColumnName(nameof(IHasConcurrencyStamp.ConcurrencyStamp));
             }
         }
-
         public static void ConfigureSoftDelete<T>(this EntityTypeBuilder<T> b)
             where T : class, ISoftDelete
         {
             b.As<EntityTypeBuilder>().TryConfigureSoftDelete();
         }
-
         public static void TryConfigureSoftDelete(this EntityTypeBuilder b)
         {
             if (b.Metadata.ClrType.IsAssignableTo<ISoftDelete>())
             {
                 b.Property(nameof(ISoftDelete.IsDeleted))
-                    .IsRequired()
-                    .HasDefaultValue(false)
-                    .HasColumnName(nameof(ISoftDelete.IsDeleted));
+                    .IsRequired().HasDefaultValue(false);
+                b.Property(nameof(ISoftDelete.DeletionTime));
+                b.Property(nameof(ISoftDelete.DeletedId));
             }
         }
         public static void ConfigureMultiTenant<T>(this EntityTypeBuilder<T> b)
@@ -78,7 +75,6 @@ namespace SaleCom.EntityFramework
         {
             b.As<EntityTypeBuilder>().TryConfigureMultiTenant();
         }
-
         public static void TryConfigureMultiTenant(this EntityTypeBuilder b)
         {
             if (b.Metadata.ClrType.IsAssignableTo<IMultiTenant>())
@@ -86,6 +82,16 @@ namespace SaleCom.EntityFramework
                 b.Property(nameof(IMultiTenant.TenantId))
                     .IsRequired(false)
                     .HasColumnName(nameof(IMultiTenant.TenantId));
+            }
+        }
+
+        public static void TryConfigureMustHaveCurrentUser(this EntityTypeBuilder b)
+        {
+            if (b.Metadata.ClrType.IsAssignableTo<IMustHaveCurrentUser>())
+            {
+                b.Property(nameof(IMustHaveCurrentUser.UserId))
+                    .IsRequired(true)
+                    .HasColumnName(nameof(IMustHaveCurrentUser.UserId));
             }
         }
     }

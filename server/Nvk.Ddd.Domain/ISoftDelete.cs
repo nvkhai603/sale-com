@@ -16,5 +16,14 @@ namespace Nvk.Ddd.Domain
         /// Used to mark an Entity as 'Deleted'. 
         /// </summary>
         bool IsDeleted { get; set; }
+        /// <summary>
+        /// Id user delete.
+        /// </summary>
+        Guid? DeletedId { get; set; }
+        /// <summary>
+        /// Time delete.
+        /// </summary>
+        DateTime? DeletionTime { get; set; }
+
     }
 }

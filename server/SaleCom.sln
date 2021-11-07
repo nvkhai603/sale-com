@@ -27,9 +27,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nvk.Cache", "Nvk.Cache\Nvk.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nvk.Utilities", "Nvk.Utilities\Nvk.Utilities.csproj", "{C341AEED-BB4E-46A9-B912-0C2D745BB716}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nvk.Ddd.Domain", "Nvk.Ddd.Domain\Nvk.Ddd.Domain.csproj", "{0CF37540-E660-46DD-A219-0F5FC145A5AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nvk.Ddd.Domain", "Nvk.Ddd.Domain\Nvk.Ddd.Domain.csproj", "{0CF37540-E660-46DD-A219-0F5FC145A5AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nvk.MultiTenancy", "Nvk.MultiTenancy\Nvk.MultiTenancy.csproj", "{9323701C-64A6-4C7D-A573-1FE640C30DDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nvk.MultiTenancy", "Nvk.MultiTenancy\Nvk.MultiTenancy.csproj", "{9323701C-64A6-4C7D-A573-1FE640C30DDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nvk.Data", "Nvk.Data\Nvk.Data.csproj", "{104869F1-3E60-48BD-9BFF-E80367414FAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +91,10 @@ Global
 		{9323701C-64A6-4C7D-A573-1FE640C30DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9323701C-64A6-4C7D-A573-1FE640C30DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9323701C-64A6-4C7D-A573-1FE640C30DDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{104869F1-3E60-48BD-9BFF-E80367414FAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{104869F1-3E60-48BD-9BFF-E80367414FAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{104869F1-3E60-48BD-9BFF-E80367414FAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{104869F1-3E60-48BD-9BFF-E80367414FAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +107,7 @@ Global
 		{C341AEED-BB4E-46A9-B912-0C2D745BB716} = {D03D420E-3063-4FD2-AAFD-74ADF9269548}
 		{0CF37540-E660-46DD-A219-0F5FC145A5AD} = {D03D420E-3063-4FD2-AAFD-74ADF9269548}
 		{9323701C-64A6-4C7D-A573-1FE640C30DDC} = {D03D420E-3063-4FD2-AAFD-74ADF9269548}
+		{104869F1-3E60-48BD-9BFF-E80367414FAB} = {D03D420E-3063-4FD2-AAFD-74ADF9269548}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {854EBAA2-8AEC-4BBC-AA4C-9C1F005B4DEF}

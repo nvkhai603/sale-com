@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SaleCom.Application.Contracts.Accounts;
+using SaleCom.Application.Contracts.Tenants;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
@@ -48,12 +50,52 @@ namespace SaleCom.Api.Host.Controllers
             return await _accountService.GetSessionDataAsync();
         }
 
+        [HttpGet("tenants")]
+        [Authorize]
+        public async Task<IEnumerable<TenantDto>> GetAllTenantOfUser()
+        {
+            return await _accountService.GetAllTenantOfUserAsync();
+        }
+
+        [HttpGet("access-tenant")]
+        [Authorize]
+        public async Task<IActionResult> GetAccessForTenant(string tenantId)
+        {
+            var isOk = await _accountService.AccessTenantAsync(tenantId);
+            if (!isOk)
+            {
+                return Forbid();
+            }
+            return Ok();
+        }
+
+        [HttpGet("access-shop")]
+        [Authorize]
+        public async Task<IActionResult> GetAccessForShop(int shopId)
+        {
+            return Ok();
+        }
+
         [HttpGet("logout")]
         [Authorize]
         public async Task<IActionResult> LogOut()
         {
             await _accountService.LogOutAsync();
             return Ok();
+        }
+
+        [HttpGet("user-sessions")]
+        [Authorize]
+        public async Task<IEnumerable<LoginSession>> GetAllSessionsLoginOfUser()
+        {
+            return await _accountService.GetAllSessionLoginOfUserAsync();
+        }
+
+        [HttpGet("roles")]
+        [Authorize]
+        public async Task<IEnumerable<RoleDto>> GetRoles()
+        {
+            return await _accountService.GetAllRoles();
         }
     }
 }

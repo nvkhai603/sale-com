@@ -9,7 +9,7 @@ namespace Nvk.Utilities
     public class RegexHelper
     {
         /// <summary>
-        /// Kiểm tra định dạng Email
+        /// Check email format.
         /// </summary>
         /// <param name="email">Email</param>
         /// <returns>True/False</returns>

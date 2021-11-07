@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SaleCom.Application.Contracts\SaleCom.Application.Contracts.csproj" />
+    <ProjectReference Include="..\SaleCom.EntityFramework\SaleCom.EntityFramework.csproj" />
   </ItemGroup>
 
 </Project>

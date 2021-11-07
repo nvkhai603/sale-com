@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
+using SaleCom.Application.Contracts.Tenants;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SaleCom.Application.Contracts.Accounts
@@ -9,7 +8,7 @@ namespace SaleCom.Application.Contracts.Accounts
     /// <summary>
     /// Định nghĩa interface(s) cho dịch vụ tài khoản, người dùng, đăng nhập & đăng xuất, etc.
     /// </summary>
-    public interface IAccountService
+    public interface IAccountService: IAppService
     {
         /// <summary>
         /// Tạo mới tài khoản truy cập.
@@ -46,8 +45,33 @@ namespace SaleCom.Application.Contracts.Accounts
         Task ResetPasswordAsync(string email);
 
         /// <summary>
+        /// Lấy về tất cả công ty mà người dùng có thể truy cập.
+        /// </summary>
+        /// <returns>Danh sách thông tin công ty</returns>
+        Task<IEnumerable<TenantDto>> GetAllTenantOfUserAsync();
+
+        /// <summary>
         /// Thực hiện đăng xuất tài khoản người dùng khỏi hệ thống.
         /// </summary>
         Task LogOutAsync();
+
+        /// <summary>
+        /// Thực hiện thêm xác thực truy cập công ty được yêu cầu.
+        /// </summary>
+        /// <param name="tenantId">Id công ty</param>
+        /// <returns>Cookie sẽ có thêm tenantId trong claim</returns>
+        Task<bool> AccessTenantAsync(string tenantId);
+
+        /// <summary>
+        /// Thực hiện lấy về tất cả các phiên làm việc của người dùng hiện tại.
+        /// </summary>
+        /// <returns>Danh sách tất cả các phiên đăng nhập của người dùng hiện tại.</returns>
+        Task<IEnumerable<LoginSession>> GetAllSessionLoginOfUserAsync();
+
+        /// <summary>
+        /// Thực hiện lấy về tất cả vai trò của người dùng.
+        /// </summary>
+        /// <returns>Danh sách tất cả vai trò của người dùng hiện tại.</returns>
+        Task<IEnumerable<RoleDto>> GetAllRoles();
     }
 }

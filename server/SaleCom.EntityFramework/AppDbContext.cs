@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Nvk.Data;
 using Nvk.Ddd.Domain;
+using Nvk.MultiTenancy;
 using Nvk.Utilities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,11 +18,13 @@ namespace SaleCom.EntityFramework
 {
     public class AppDbContext<TDbContext> : DbContext where TDbContext : DbContext
     {
-        public AppDbContext([NotNullAttribute] DbContextOptions options) : base(options)
+        private readonly ILazyServiceProvider _lazyServiceProvider;
+        public AppDbContext([NotNullAttribute] DbContextOptions options, ILazyServiceProvider lazyServiceProvider) : base(options)
         {
-
+            _lazyServiceProvider = lazyServiceProvider;
         }
 
+        private ICurrentUser _currentUser => _lazyServiceProvider.LazyGetService<ICurrentUser>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -68,11 +70,12 @@ namespace SaleCom.EntityFramework
                 return;
             }
 
-            if (!typeof(IEntity).IsAssignableFrom(typeof(TEntity)))
+            if (!typeof(IShouldConfigureBaseProperties).IsAssignableFrom(typeof(TEntity)))
             {
                 return;
             }
             modelBuilder.Entity<TEntity>().ConfigureByConvention();
+            ConfigureGlobalFilters<TEntity>(modelBuilder, mutableEntityType);
         }
         protected virtual void ConfigureValueConverter<TEntity>(ModelBuilder modelBuilder, IMutableEntityType mutableEntityType)
             where TEntity : class
@@ -96,7 +99,7 @@ namespace SaleCom.EntityFramework
 
             idPropertyBuilder.ValueGeneratedNever();
         }
-        
+
         /// <summary>
         /// This method will call the DbContext <see cref="SaveChangesAsync(bool, CancellationToken)"/> method directly of EF Core, which doesn't apply concepts of abp.
         /// </summary>
@@ -231,6 +234,7 @@ namespace SaleCom.EntityFramework
             entry.Reload();
             entry.State = EntityState.Modified;
             entry.Entity.As<ISoftDelete>().IsDeleted = true;
+            entry.Entity.As<ISoftDelete>().DeletionTime = DateTime.Now;
             return true;
         }
         protected virtual void SetCreatorProperties(EntityEntry entry)
@@ -244,8 +248,8 @@ namespace SaleCom.EntityFramework
             Entry(entity).Property(x => x.CreationTime).OriginalValue = entity.CreationTime;
             entity.CreationTime = DateTime.Now;
         }
-
-        protected virtual void SetModifierProperties(EntityEntry entry) {
+        protected virtual void SetModifierProperties(EntityEntry entry)
+        {
             var entity = entry.Entity as IEntity;
             if (entity == null)
             {
@@ -254,6 +258,94 @@ namespace SaleCom.EntityFramework
 
             Entry(entity).Property(x => x.LastModificationTime).OriginalValue = entity.LastModificationTime;
             entity.LastModificationTime = DateTime.Now;
+        }
+        protected virtual void ConfigureGlobalFilters<TEntity>(ModelBuilder modelBuilder, IMutableEntityType mutableEntityType)
+            where TEntity : class
+        {
+            if (mutableEntityType.BaseType == null && ShouldFilterEntity<TEntity>(mutableEntityType))
+            {
+                var filterExpression = CreateFilterExpression<TEntity>();
+                if (filterExpression != null)
+                {
+                    modelBuilder.Entity<TEntity>().HasQueryFilter(filterExpression);
+                }
+            }
+        }
+        protected virtual bool ShouldFilterEntity<TEntity>(IMutableEntityType entityType) where TEntity : class
+        {
+            if (typeof(IMultiTenant).IsAssignableFrom(typeof(TEntity)))
+            {
+                return true;
+            }
+
+            if (typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity)))
+            {
+                return true;
+            }
+
+            if (typeof(IMustHaveCurrentUser).IsAssignableFrom(typeof(TEntity)))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        protected virtual Expression<Func<TEntity, bool>> CreateFilterExpression<TEntity>()
+            where TEntity : class
+        {
+            Expression<Func<TEntity, bool>> expression = null;
+
+            if (typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity)))
+            {
+                expression = e => !EF.Property<bool>(e, "IsDeleted");
+            }
+
+            if (typeof(IMultiTenant).IsAssignableFrom(typeof(TEntity)))
+            {
+                Expression<Func<TEntity, bool>> multiTenantFilter = e => _currentUser.TenantId != null ? EF.Property<Guid>(e, "TenantId").Equals(_currentUser.TenantId) : false; // TODO
+                expression = expression == null ? multiTenantFilter : CombineExpressions(expression, multiTenantFilter);
+            }
+
+            if (typeof(IMustHaveCurrentUser).IsAssignableFrom(typeof(TEntity)))
+            {
+                Expression<Func<TEntity, bool>> currentUserFilter = e => EF.Property<Guid>(e, "UserId").Equals(_currentUser.Id); // TODO
+                expression = expression == null ? currentUserFilter : CombineExpressions(expression, currentUserFilter);
+            }
+
+            return expression;
+        }
+        protected virtual Expression<Func<T, bool>> CombineExpressions<T>(Expression<Func<T, bool>> expression1, Expression<Func<T, bool>> expression2)
+        {
+            var parameter = Expression.Parameter(typeof(T));
+
+            var leftVisitor = new ReplaceExpressionVisitor(expression1.Parameters[0], parameter);
+            var left = leftVisitor.Visit(expression1.Body);
+
+            var rightVisitor = new ReplaceExpressionVisitor(expression2.Parameters[0], parameter);
+            var right = rightVisitor.Visit(expression2.Body);
+
+            return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(left, right), parameter);
+        }
+        class ReplaceExpressionVisitor : ExpressionVisitor
+        {
+            private readonly Expression _oldValue;
+            private readonly Expression _newValue;
+
+            public ReplaceExpressionVisitor(Expression oldValue, Expression newValue)
+            {
+                _oldValue = oldValue;
+                _newValue = newValue;
+            }
+
+            public override Expression Visit(Expression node)
+            {
+                if (node == _oldValue)
+                {
+                    return _newValue;
+                }
+
+                return base.Visit(node);
+            }
         }
         #endregion
     }

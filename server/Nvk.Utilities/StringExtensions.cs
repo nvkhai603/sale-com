@@ -561,5 +561,19 @@ namespace Nvk.Utilities
 
             return true;
         }
+        
+        /// <summary>
+        /// Convert string to Guid.
+        /// </summary>
+        /// <param name="str">string input</param>
+        /// <returns>Guid or null if invalid</returns>
+        public static Guid? GetGuid(this string str)
+        {
+            if (Guid.TryParse(str, out Guid result))
+            {
+                return result;
+            }
+            return null;
+        }
     }
 }

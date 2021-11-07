@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nvk.Data;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace Nvk.Ddd.Domain
     /// Defines an entity. It's primary key may not be "Id" or it may have a composite primary key.
     /// Use <see cref="IEntity{TKey}"/> where possible for better integration to repositories and other structures in the framework.
     /// </summary>
-    public interface IEntity
+    public interface IEntity : IShouldConfigureBaseProperties
     {
         /// <summary>
         /// Return array keys for this entity.

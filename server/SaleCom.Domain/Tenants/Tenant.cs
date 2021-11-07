@@ -23,5 +23,13 @@ namespace SaleCom.Domain.Tenants
         /// </summary>
         public string Image { get; set; }
         public virtual DomainTenant DomainTenant { get; set; }
+
+        /// <summary>
+        /// Thêm Tenant vào Domain.
+        /// </summary>
+        /// <param name="domainTenant">Miền của các Tenant</param>
+        public void AddToDomain(DomainTenant domainTenant) { 
+            DomainTenant = domainTenant;   
+        }
     }
 }

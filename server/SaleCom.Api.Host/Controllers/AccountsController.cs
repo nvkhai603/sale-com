@@ -69,13 +69,6 @@ namespace SaleCom.Api.Host.Controllers
             return Ok();
         }
 
-        [HttpGet("access-shop")]
-        [Authorize]
-        public async Task<IActionResult> GetAccessForShop(int shopId)
-        {
-            return Ok();
-        }
-
         [HttpGet("logout")]
         [Authorize]
         public async Task<IActionResult> LogOut()

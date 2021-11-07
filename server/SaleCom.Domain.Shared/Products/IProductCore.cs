@@ -1,18 +1,10 @@
-﻿using Nvk.Ddd.Domain;
-using Nvk.MultiTenancy;
-using SaleCom.Domain.Shared.Products;
-using SaleCom.Domain.Varations;
-using SaleCom.Domain.WareHouses;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SaleCom.Domain.Products
+namespace SaleCom.Domain.Shared.Products
 {
-    /// <summary>
-    /// Sản phẩm.
-    /// </summary>
-    public class Product : AggreateRootMulitiTenantSoftDelete<Guid>, IProductCore
+    public interface IProductCore
     {
         /// <summary>
         /// Tên sản phẩm.
@@ -41,7 +33,7 @@ namespace SaleCom.Domain.Products
         /// <summary>
         /// Cho phép bán tồn kho âm.
         /// </summary>
-        public bool IsSellNegative { get; set; } = false;
+        public bool IsSellNegative { get; set; }
         /// <summary>
         /// Thẻ.
         /// </summary>
@@ -50,13 +42,5 @@ namespace SaleCom.Domain.Products
         /// Cảnh báo hết hàng theo từng mẫu mã.
         /// </summary>
         public bool IsWarningByVariation { get; set; }
-        /// <summary>
-        /// Các biến thể.
-        /// </summary>
-        public virtual ICollection<Varation> Varations { get; set; }
-        /// <summary>
-        /// Thuộc kho.
-        /// </summary>
-        public virtual WareHouse WareHouse {  get; set; }
     }
 }

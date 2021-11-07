@@ -1,16 +1,10 @@
-﻿using Nvk.Ddd.Domain;
-using SaleCom.Domain.Products;
-using SaleCom.Domain.Shared.Varations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SaleCom.Domain.Varations
+namespace SaleCom.Domain.Shared.Varations
 {
-    /// <summary>
-    /// Mẫu mã.
-    /// </summary>
-    public class Varation : AggreateRootMulitiTenantSoftDelete<Guid>, IVarationCore
+    public interface IVarationCore
     {
         /// <summary>
         /// Hình ảnh.
@@ -19,7 +13,7 @@ namespace SaleCom.Domain.Varations
         /// <summary>
         /// Khóa.
         /// </summary>
-        public bool IsLock { get; set; } = false;
+        public bool IsLock { get; set; }
         /// <summary>
         /// BarCode.
         /// </summary>
@@ -52,13 +46,5 @@ namespace SaleCom.Domain.Varations
         /// Tổng tiền chi nhập hàng.
         /// </summary>
         public decimal TotalPurchasePrice { get; set; }
-        /// <summary>
-        /// Id sản phẩm gốc.
-        /// </summary>
-        public Guid ProductId { get; set; }
-        /// <summary>
-        /// Sản phẩm gốc.
-        /// </summary>
-        public virtual Product Product { get; set; }
     }
 }

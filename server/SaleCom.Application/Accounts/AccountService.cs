@@ -22,6 +22,7 @@ using SaleCom.Domain.Shared.Identity;
 using SaleCom.EntityFramework.Dapper;
 using Dapper;
 using System.Security.Principal;
+using SaleCom.Domain.Licenses;
 
 namespace SaleCom.Application.Accounts
 {
@@ -154,10 +155,16 @@ SELECT * FROM user_claims uc WHERE uc.UserId =@v_userId AND uc.TenantId =@v_tena
             {
                 var emailConfirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 _ = _emailService.SendAsync("SALECOM", user.Email, "Kích hoạt tài khoản SALECOM.", $"EMAIL TOKEN: {Uri.EscapeDataString(emailConfirmToken)}");
+                
+                // Tạo Domain
+                var domaintenant = new DomainTenant(user.Id);
+                var domainTenantRepo = _uow.GetRepository<DomainTenant>();
+                await domainTenantRepo.InsertAsync(domaintenant);
 
                 // Đăng ký tài khoản mới nên cần tạo tenant do chính user này quản lý
                 var tenant = new Tenant(registerAccount.TenantName ?? TenantConsts.DefaultTenantName);
                 tenant.Id = Guid.NewGuid();
+                tenant.AddToDomain(domaintenant);
                 var tenantUserRepo = _uow.GetRepository<TenantUser>();
                 await tenantUserRepo.InsertAsync(new TenantUser { User = user, Tenant = tenant });
 

@@ -22,6 +22,6 @@ namespace SaleCom.Application.Contracts.Products
         /// <summary>
         /// Biến thể.
         /// </summary>
-        public ICollection<VarationReq> Varation { get; set; }
+        public ICollection<VarationReq> Varations { get; set; }
     }
 }

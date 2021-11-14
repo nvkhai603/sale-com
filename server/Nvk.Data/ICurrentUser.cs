@@ -11,5 +11,7 @@ namespace Nvk.Data
         string IdString { get; }
         Guid? TenantId { get; }
         string TenantIdString { get; }
+        Guid? WareHouseId {  get; }
+        string WareHouseIdString {  get; }
     }
 }

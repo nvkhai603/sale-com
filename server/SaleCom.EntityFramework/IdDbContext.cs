@@ -11,6 +11,7 @@ using SaleCom.Domain.Tenants;
 using SaleCom.Domain.Identity;
 using Nvk.Data;
 using SaleCom.Domain.Licenses;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 
 namespace SaleCom.EntityFramework
 {
@@ -29,6 +30,7 @@ namespace SaleCom.EntityFramework
         public DbSet<LicensePack> LicensePacks { get; set; }
         public DbSet<DomainLicense> DomainLicenses { get; set; }
         public DbSet<DomainTenant> TenantDomains { get; set; }
+        //public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
         public IdDbContext(DbContextOptions<IdDbContext> options, ILazyServiceProvider lazyServiceProvider) : base(options, lazyServiceProvider)
         {
@@ -48,7 +50,8 @@ namespace SaleCom.EntityFramework
         {
             //Configure default schema
             base.OnModelCreating(builder);
-            builder.Entity<Tenant>(b => {
+            builder.Entity<Tenant>(b =>
+            {
                 b.HasKey(t => t.Id);
                 b.HasIndex(t => t.Name).HasDatabaseName("TenantNameIndex");
                 b.ToTable("tenants");
@@ -193,6 +196,11 @@ namespace SaleCom.EntityFramework
                 b.HasKey(a => new { a.OwnerId });
                 b.ToTable("domain_tenants");
             });
+            //builder.Entity<DataProtectionKey>(b =>
+            //{
+            //    b.HasKey(a => new { a.Id });
+            //    b.ToTable("data_protection_keys");
+            //});
         }
     }
 }

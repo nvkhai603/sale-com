@@ -7,6 +7,7 @@ using Nvk.MultiTenancy;
 using Nvk.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SaleCom.EntityFramework
@@ -21,7 +22,7 @@ namespace SaleCom.EntityFramework
             b.TryConfigureMustHaveCurrentUser();
             b.TryConfigureCreateAndModified();
         }
-        public static void ConfigureCreateAndModified<T>(this EntityTypeBuilder<T> b) 
+        public static void ConfigureCreateAndModified<T>(this EntityTypeBuilder<T> b)
             where T : class, IEntity
         {
             b.As<EntityTypeBuilder>();
@@ -84,7 +85,6 @@ namespace SaleCom.EntityFramework
                     .HasColumnName(nameof(IMultiTenant.TenantId));
             }
         }
-
         public static void TryConfigureMustHaveCurrentUser(this EntityTypeBuilder b)
         {
             if (b.Metadata.ClrType.IsAssignableTo<IMustHaveCurrentUser>())
@@ -92,6 +92,16 @@ namespace SaleCom.EntityFramework
                 b.Property(nameof(IMustHaveCurrentUser.UserId))
                     .IsRequired(true)
                     .HasColumnName(nameof(IMustHaveCurrentUser.UserId));
+            }
+        }
+        public static void ConfigureDecimalPrecisionAndScale(this ModelBuilder modelBuilder)
+        {
+            foreach (var property in modelBuilder.Model.GetEntityTypes()
+                    .SelectMany(t => t.GetProperties())
+                    .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
+            {
+                property.SetPrecision(10);
+                property.SetScale(2);
             }
         }
     }

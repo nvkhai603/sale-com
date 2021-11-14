@@ -26,7 +26,12 @@ namespace SaleCom.Application
 
             // Sản phẩm.
             CreateMap<CreateProductReq, Product>();
-            CreateMap<VarationReq, Varation>();
+            CreateMap<VarationReq, Varation>().ForMember(x => x.Id, o => o.MapFrom(s => Guid.NewGuid()));
+            CreateMap<Varation, VarationRes>();
+            CreateMap<Product, ProductRes>();
+            CreateMap<Product, ProductDetailRes>();
+            CreateMap<UpdateVarationReq, Varation>();
+            CreateMap<UpdateProductDetailReq, Product>().ForMember(x => x.Varations, opt => opt.Ignore());
         }
     }
 }

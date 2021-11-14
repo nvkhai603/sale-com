@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Nvk.Data;
 using Nvk.Dapper;
 using SaleCom.EntityFramework.Dapper;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Authentication;
 
 namespace SaleCom.Api.Host
 {
@@ -60,6 +62,7 @@ namespace SaleCom.Api.Host
             services.AddDbContext<SaleComDbContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("Db"), ServerVersion.Parse(DB_VERSION)));
             services.AddUnitOfWork<SaleComDbContext, IdDbContext>();
+            //services.AddDataProtection().PersistKeysToDbContext<IdDbContext>().SetApplicationName("SaleComApp");
             services.AddIdentity<AppUser, AppRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
@@ -79,6 +82,11 @@ namespace SaleCom.Api.Host
                 .Configure<ITicketStore>((options, store) => {
                     options.SessionStore = store;
                 });
+            //var protectionProvider = DataProtectionProvider.Create("SaleComApp");
+            //var dataProtector = protectionProvider.CreateProtector(
+            //"Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationMiddleware",
+            //"Cookies",
+            //"v2");
             services.ConfigureApplicationCookie(options =>
             {
                 // Cookie settings
@@ -95,6 +103,8 @@ namespace SaleCom.Api.Host
                     return Task.CompletedTask;
                 };
                 options.ExpireTimeSpan = TimeSpan.FromDays(14);
+                //options.TicketDataFormat = new TicketDataFormat(dataProtector);
+                //options.DataProtectionProvider = protectionProvider;
             });
 
             services.AddHttpContextAccessor();

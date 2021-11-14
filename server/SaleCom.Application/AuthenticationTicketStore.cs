@@ -50,6 +50,7 @@ namespace SaleCom.Application
             if (Guid.TryParse(key, out var id))
             {
                 var authenticationTicket = await _context.AuthenticationTickets.FindAsync(id);
+
                 if (authenticationTicket != null)
                 {
                     authenticationTicket.LastActivity = DateTime.Now;

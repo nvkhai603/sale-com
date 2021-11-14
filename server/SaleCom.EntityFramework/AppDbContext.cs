@@ -24,7 +24,7 @@ namespace SaleCom.EntityFramework
             _lazyServiceProvider = lazyServiceProvider;
         }
 
-        private ICurrentUser _currentUser => _lazyServiceProvider.LazyGetService<ICurrentUser>();
+        protected ICurrentUser _currentUser => _lazyServiceProvider.LazyGetService<ICurrentUser>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -62,6 +62,7 @@ namespace SaleCom.EntityFramework
                     nameof(ConfigureValueGenerated),
                     BindingFlags.Instance | BindingFlags.NonPublic
                 );
+
         protected virtual void ConfigureBaseProperties<TEntity>(ModelBuilder modelBuilder, IMutableEntityType mutableEntityType)
             where TEntity : class
         {
@@ -75,6 +76,7 @@ namespace SaleCom.EntityFramework
                 return;
             }
             modelBuilder.Entity<TEntity>().ConfigureByConvention();
+            modelBuilder.ConfigureDecimalPrecisionAndScale();
             ConfigureGlobalFilters<TEntity>(modelBuilder, mutableEntityType);
         }
         protected virtual void ConfigureValueConverter<TEntity>(ModelBuilder modelBuilder, IMutableEntityType mutableEntityType)
@@ -150,6 +152,8 @@ namespace SaleCom.EntityFramework
             CheckAndSetId(entry);
             SetConcurrencyStampIfNull(entry);
             SetCreatorProperties(entry);
+            SetTenantId(entry);
+            SetWareHouseId(entry);
         }
         protected virtual void ApplyConceptsForModifiedEntity(EntityEntry entry)
         {
@@ -247,7 +251,33 @@ namespace SaleCom.EntityFramework
 
             Entry(entity).Property(x => x.CreationTime).OriginalValue = entity.CreationTime;
             entity.CreationTime = DateTime.Now;
+
+            Entry(entity).Property(x => x.CreatorId).OriginalValue = entity.CreatorId;
+            entity.CreatorId = _currentUser.Id;
         }
+
+        protected virtual void SetTenantId(EntityEntry entry)
+        {
+            var entity = entry.Entity as IMultiTenant;
+            if (entity == null)
+            {
+                return;
+            }
+            Entry(entity).Property(x => x.TenantId).OriginalValue = entity.TenantId;
+            entity.TenantId = _currentUser.TenantId;
+        }
+
+        protected virtual void SetWareHouseId(EntityEntry entry)
+        {
+            var entity = entry.Entity as IMultiWareHouse;
+            if (entity == null)
+            {
+                return;
+            }
+            Entry(entity).Property(x => x.WareHouseId).OriginalValue = entity.WareHouseId;
+            entity.WareHouseId = _currentUser.WareHouseId;
+        }
+
         protected virtual void SetModifierProperties(EntityEntry entry)
         {
             var entity = entry.Entity as IEntity;
@@ -302,8 +332,14 @@ namespace SaleCom.EntityFramework
 
             if (typeof(IMultiTenant).IsAssignableFrom(typeof(TEntity)))
             {
-                Expression<Func<TEntity, bool>> multiTenantFilter = e => _currentUser.TenantId != null ? EF.Property<Guid>(e, "TenantId").Equals(_currentUser.TenantId) : false; // TODO
+                Expression<Func<TEntity, bool>> multiTenantFilter = e => _currentUser.TenantId != null ? EF.Property<Guid>(e, "TenantId").Equals(_currentUser.TenantId) : false; 
                 expression = expression == null ? multiTenantFilter : CombineExpressions(expression, multiTenantFilter);
+            }
+
+            if (typeof(IMultiWareHouse).IsAssignableFrom(typeof(TEntity)))
+            {
+                Expression<Func<TEntity, bool>> multiWareHouseFilter = e => _currentUser.WareHouseId != null ? EF.Property<Guid>(e, "WareHouseId").Equals(_currentUser.WareHouseId) : false;
+                expression = expression == null ? multiWareHouseFilter : CombineExpressions(expression, multiWareHouseFilter);
             }
 
             if (typeof(IMustHaveCurrentUser).IsAssignableFrom(typeof(TEntity)))

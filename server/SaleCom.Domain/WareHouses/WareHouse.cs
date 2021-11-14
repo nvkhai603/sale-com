@@ -11,6 +11,11 @@ namespace SaleCom.Domain.WareHouses
     /// </summary>
     public class WareHouse : AggreateRootMulitiTenantSoftDelete<Guid>
     {
+        public WareHouse(string name)
+        {
+            Name = name;
+        }
+
         /// <summary>
         /// Tên kho hàng.
         /// </summary>
@@ -39,8 +44,5 @@ namespace SaleCom.Domain.WareHouses
         /// Nhân viên thuộc kho.
         /// </summary>
         public Guid Staff { get; set; }
-        /// <summary>
-        /// Hệ thống.
-        /// </summary>
     }
 }

@@ -8,7 +8,7 @@ namespace SaleCom.Domain.Identity
     /// <summary>
     /// Ticket cho SessionStore
     /// </summary>
-    public class AppAuthenticationTicket : IMustHaveCurrentUser
+    public class AppAuthenticationTicket
     {
         public Guid Id { get; set; }
 
@@ -19,6 +19,5 @@ namespace SaleCom.Domain.Identity
         public DateTime? LastActivity { get; set; }
 
         public DateTime? Expires { get; set; }
-        public virtual AppUser User { get; set; }
     }
 }

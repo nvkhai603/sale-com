@@ -59,8 +59,9 @@ namespace SaleCom.Application.Contracts.Accounts
         /// Thực hiện thêm xác thực truy cập công ty được yêu cầu.
         /// </summary>
         /// <param name="tenantId">Id công ty</param>
+        /// <param name="wareHouseId">Id kho</param>
         /// <returns>Cookie sẽ có thêm tenantId trong claim</returns>
-        Task<bool> AccessTenantAsync(string tenantId);
+        Task<bool> AccessTenantAsync(string tenantId, string wareHouseId);
 
         /// <summary>
         /// Thực hiện lấy về tất cả các phiên làm việc của người dùng hiện tại.

@@ -59,9 +59,9 @@ namespace SaleCom.Api.Host.Controllers
 
         [HttpGet("access-tenant")]
         [Authorize]
-        public async Task<IActionResult> GetAccessForTenant(string tenantId)
+        public async Task<IActionResult> GetAccessForTenant(string tenantId, string wareHouseId)
         {
-            var isOk = await _accountService.AccessTenantAsync(tenantId);
+            var isOk = await _accountService.AccessTenantAsync(tenantId, wareHouseId);
             if (!isOk)
             {
                 return Forbid();

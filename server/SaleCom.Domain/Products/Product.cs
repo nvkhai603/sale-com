@@ -12,7 +12,7 @@ namespace SaleCom.Domain.Products
     /// <summary>
     /// Sản phẩm.
     /// </summary>
-    public class Product : AggreateRootMulitiTenantSoftDelete<Guid>, IProductCore
+    public class Product : AggreateRootMulitiTenantSoftDelete<Guid>, IProductCore, IMultiWareHouse
     {
         /// <summary>
         /// Tên sản phẩm.
@@ -53,10 +53,11 @@ namespace SaleCom.Domain.Products
         /// <summary>
         /// Các biến thể.
         /// </summary>
-        public virtual ICollection<Varation> Varations { get; set; }
+        public virtual IList<Varation> Varations { get; set; }
         /// <summary>
         /// Thuộc kho.
         /// </summary>
         public virtual WareHouse WareHouse {  get; set; }
+        public Guid? WareHouseId { get ; set ; }
     }
 }

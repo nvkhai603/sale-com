@@ -7,5 +7,6 @@ namespace SaleCom.Domain.Shared.Tenants
     public static class TenantConsts
     {
         public const string DefaultTenantName = "Cửa hàng của tôi"; 
+        public const string DefaultWareHouseName = "Kho hàng mặc định"; 
     }
 }

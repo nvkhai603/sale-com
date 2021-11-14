@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SaleCom.EntityFramework;
 
 namespace SaleCom.EntityFramework.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211113164703_UpdateDatabase1311_3")]
+    partial class UpdateDatabase1311_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,8 +94,7 @@ namespace SaleCom.EntityFramework.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("UserId");
+                        .HasColumnType("char(36)");
 
                     b.Property<byte[]>("Value")
                         .HasColumnType("longblob");
@@ -602,6 +603,17 @@ namespace SaleCom.EntityFramework.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SaleCom.Domain.Identity.AppAuthenticationTicket", b =>
+                {
+                    b.HasOne("SaleCom.Domain.Identity.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SaleCom.Domain.Identity.AppUserClaim", b =>

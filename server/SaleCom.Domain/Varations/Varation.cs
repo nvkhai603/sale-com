@@ -15,7 +15,7 @@ namespace SaleCom.Domain.Varations
         /// <summary>
         /// Hình ảnh.
         /// </summary>
-        public string Images { get; set; }
+        public string Images { get; set; } 
         /// <summary>
         /// Khóa.
         /// </summary>
@@ -52,10 +52,6 @@ namespace SaleCom.Domain.Varations
         /// Tổng tiền chi nhập hàng.
         /// </summary>
         public decimal TotalPurchasePrice { get; set; }
-        /// <summary>
-        /// Id sản phẩm gốc.
-        /// </summary>
-        public Guid ProductId { get; set; }
         /// <summary>
         /// Sản phẩm gốc.
         /// </summary>

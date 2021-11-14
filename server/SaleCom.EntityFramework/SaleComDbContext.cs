@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Nvk.Data;
+using Nvk.MultiTenancy;
 using SaleCom.Domain.Customers;
 using SaleCom.Domain.Orders;
 using SaleCom.Domain.Products;
@@ -68,6 +70,22 @@ namespace SaleCom.EntityFramework
                 b.HasKey(o => o.Id);
                 b.ToTable("ware_houses");
             });
+        }
+        protected override void SetTenantId(EntityEntry entry)
+        {
+            var isWareHouse = entry.Entity as WareHouse;
+            if (isWareHouse != null)
+            {
+                return;
+            }
+
+            var entity = entry.Entity as IMultiTenant;
+            if (entity == null)
+            {
+                return;
+            }
+            Entry(entity).Property(x => x.TenantId).OriginalValue = entity.TenantId;
+            entity.TenantId = _currentUser.TenantId;
         }
     }
 }

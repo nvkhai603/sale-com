@@ -19,5 +19,6 @@ namespace SaleCom.Application.Contracts.Accounts
         /// </summary>
         public string Phone { get; set; }
         public string TenantId { get; set; }
+        public string WareHouseId { get; set; }
     }
 }
